@@ -3,9 +3,9 @@ import { AxiosInstance } from "./types"
 
 function createInstance() : AxiosInstance {
   const context = new Axios()
-  const instance : AxiosInstance = Axios.prototype.request.bind(context)
+  const instance = Axios.prototype.request.bind(context)
   Object.assign(instance,Axios.prototype,context)
-  return instance
+  return instance as AxiosInstance
 }
 
 const axios = createInstance()

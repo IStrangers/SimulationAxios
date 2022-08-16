@@ -1,12 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { axios } from './axios';
 
 function App() {
 
   const testAxios = () => {
-
+    axios({
+      url: "http://localhost:8848/test?www=123",
+      method: "get",
+      headers: {
+      },
+      data: {
+        "name": "挖的"
+      },
+      timeout: 1000
+    }).then(response => {
+      console.log(response)
+    }).catch(error => {
+      console.log(error)
+    })
   }
 
   return (

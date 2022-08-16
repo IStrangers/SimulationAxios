@@ -6,15 +6,50 @@ type Methods = "get" | "GET" |
 
 interface AxiosRequestConfig {
   url: string
-  method: Methods
-  params: any
+  method?: Methods
+  params?: any
+  headers?: Record<string,any>
+  data?: Record<string,any>
+  timeout?: number
+}
+
+interface OnFulfilled<T> {
+  (value : any) : T | Promise<T>
+}
+interface OnRejected {
+  (error : any) : any
+}
+interface Interceptor<T> {
+  onFulfilled: OnFulfilled<T>
+  onRejected?: OnRejected
+}
+class AxiosInterceptorManager<T> {
+  public interceptors: Array<Interceptor<T>> = []
+
+  use(onFulfilled : OnFulfilled<T>,onRejected? : OnRejected) : number {
+    this.interceptors.push({
+      onFulfilled,
+      onRejected
+    })
+    return this.interceptors.length - 1;
+  }
+
+  eject(id : number) {
+    if(id >= 0 && id < this.interceptors.length) {
+      delete this.interceptors[id]
+    }
+  }
 }
 
 interface AxiosInstance {
-  <T>(config : AxiosRequestConfig): Promise<T>
+  <T = any>(config : AxiosRequestConfig): Promise<AxiosResponse<T>>
+  interceptors: {
+    request: AxiosInterceptorManager<AxiosRequestConfig>
+    response: AxiosInterceptorManager<AxiosResponse>
+  }
 }
 
-interface AxiosResponse<T> {
+interface AxiosResponse<T = any> {
   data: T
   status: number
   statusText: string
@@ -28,4 +63,6 @@ export {
   type AxiosRequestConfig,
   type AxiosInstance,
   type AxiosResponse,
+  type Interceptor,
+  AxiosInterceptorManager,
 }
